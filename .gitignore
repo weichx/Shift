@@ -5,3 +5,5 @@ dest
 /dest
 
 npm-debug.log
+.idea
+/.idea
