@@ -1,0 +1,30 @@
+{{!type -- when properties are parsed be sure to alphasort them so we can easily check if 2 interfaces match
+    value : string;
+    someFlag : boolean;
+    song : Song;
+}}
+
+<root block="0">
+    <div elementIndex="0">
+        the value is: {{value}}, isn't that nice?
+        the flag is: {{someFlag}}, nice!
+        <ul>
+            <!--<li>song name: {{song.name}}</li>-->
+            <!--<li>song length: {{song.playTime}}</li>-->
+            <li>content: {{value}}</li>
+        </ul>
+    </div>
+    {{#if value '==' 1}}
+        <div elementIndex="0">
+            {{someFlag}}
+        </div>
+        {{#isolate}} {{!provides a way to block out some html without changing structure or rendering, this is for performance}}
+            {{fastChangingProperty}}
+        {{/isolate}}
+        {{#foreach item in array}} {{! look into having blocks inject properties}}
+            {{item}} {{$index}}
+            {{::stringify array::1::2::3}}
+            <input type="button" onclick="{{::clicked item $index}}"/>
+        {{/foreach}}
+    {{/if}}
+</root>

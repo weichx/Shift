@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="dest/Observer/Observer.js"></script>
+    <script src="dest/Template/TemplateBinding.js"></script>
+    <script src="dest/Template/Template.js"></script>
+    <script src="dest/Template/TemplateBlock.js"></script>
+    <script src="dest/Template/TemplateBlockStructure.js"></script>
+    <script src="dest/Template/TemplateEnums.js"></script>
+    <script src="dest/Template/TemplateInterface.js"></script>
+    <script src="dest/Template/TemplateUtilities.js"></script>
+    <script src="dest/Template/TemplateStructure.js"></script>
+    <script src="dest/Template/TemplateBlock.js"></script>
+    <script src="dest/Template/__experiments.js"></script>
+    <script src="dest/Parser/Parser.js"></script>
+    <script src="dest/Observer/SmartArray.js"></script>
+    <script>
+        var fs = require("fs");
+        var gui = require('nw.gui');
+        var win = gui.Window.get();
+        win.showDevTools();
+        var hbs = require('handlebars');
+        var templateSrc = fs.readFile('test.hbs', 'utf8', function (error, string) {
+            //  var template = "{{!type str : string}}<div>{{value}}<ul>{{#if x}}<li>content2</li>{{/if}}<li>Song name:{{::test}} </li><li>Song playtime: </li></ul></div>";
+            var ast = hbs.parse(string.replace('\n', ''));
+            var parser = new Parser();
+            parser.parse(ast);
+        });
+
+        window.sa1 = new SmartArray();
+
+        var listener = {
+            elementGet: function(index, element) {
+
+            }
+        };
+
+        sa1.registerElementGet(listener);
+        sa1.registerElementSet(listener);
+        sa1.registerSizeChange(listener);
+        sa1.onElementGet.on(fn, ctx);
+        sa1.registerElementGet(this);
+
+        function subscribe(target) {
+            var ctx = target.ctx;
+            ctx.register(this, '');
+        }
+
+        listener.subscribe(sa1);
+        var array = [];
+        var proto = {
+            grow: function (size) {
+                var props = {};
+                var createObject = function (iString) {
+                    return {
+                        get: function () {
+                            return this.list[iString];
+                        },
+                        set: function (value) {
+                            console.log('setting: ' + iString);
+                            this.list[iString] = value;
+                        },
+                        enumerable: true,
+                        configurable: true
+                    }
+                };
+                for (var i = 0; i < size; i++) {
+                    props['' + i] = createObject('' + i);
+                }
+                Object.defineProperties(proto, props);
+            },
+
+            push: function () {
+                this.list.push.apply(this.list, arguments);
+                Array.prototype.push.apply(this, arguments);
+                // Array.prototype.splice.call(this, this.length, 0, arguments[0]);
+            },
+
+            unshift: function() {
+                Array.prototype.unshift.apply(this, arguments);
+            }
+        };
+
+        var Fn = function () {
+            var array = [];
+            array.list = [];
+            array.__proto__ = proto;
+
+            return array;
+        };
+
+        Fn.prototype = proto;
+        window.fn = new Fn();
+        fn.grow(5);
+        window.fn2 = new Fn();
+
+    </script>
+</head>
+<body>
+<h3>Hello Webkit</h3>
+</body>
+</html>
